@@ -3,4 +3,4 @@ project(OOP)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(OOP main.cpp)
+add_executable(OOP "Big Integers Class/big_integers.cpp")
