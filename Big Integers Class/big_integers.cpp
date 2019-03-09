@@ -12,16 +12,26 @@ void TestVector() {
   std::cout << v.Size() << '\n';
 }
 
-void TestBigInteger() {
-  BigInteger a, b;
-  std::cin >> a >> b;
-  std::cout << a.Size() << " " << b.Size() << '\n';
-  BigInteger c = a + b;
+void TestBigIntegerSum() {
+  BigInteger a, b, c;
+  std::cin >> a >> b >> c;
+  std::cout << a.Size() << " " << b.Size() << " " << c.Size() << '\n';
+  BigInteger d = a + b + c;
+  std::cout << d;
+}
 
+void TestBigIntegerDifference() {
+  BigInteger a, b, c;
+  std::cin >> a >> b >> c;
+  std::cout << a << " " << b << " " << c << '\n';
+
+  BigInteger d = a - b - c;
+  std::cout << d;
 }
 
 int main() {
   //TestVector();
-  TestBigInteger();
+  //TestBigIntegerSum();
+  TestBigIntegerDifference();
   return 0;
 }

@@ -7,7 +7,7 @@
 
 /*
  *  TODO:
- *    -> the sum of 2 big integers (by overloading the operator '+')
+ *    -> the sum of 2 big integers (by overloading the operator '+') - DONE
  *    -> the difference of 2 big integers (by overloading the operator '-')
  *    -> the product of 2 big integers (by overloading the operator '*')
  *    -> the maximum between the absolute values of 2 big integers
@@ -30,6 +30,7 @@ int& BigInteger::operator[](int index) {
   return digits[index];
 }
 
+
 int BigInteger::operator[](int index) const {
   return digits[index];
 }
@@ -38,6 +39,28 @@ int BigInteger::operator[](int index) const {
 void Swap(int& a, int& b) {
   int c = a;
   a = b; b = c;
+}
+
+
+void BigInteger::Fix() {
+  //  Erase leading zeroes
+  while (this->Size() > 1 && this->digits[this->Size()] == 0) {
+    this->digits.SetSize(this->Size() - 1);
+  }
+
+  //  Fix the sign if the number is equal to zero.
+  if (this->Size() == 0 || (this->Size() == 1 && this->digits[1] == 0)) {
+    this->sign = '+';
+    this->digits[1] = 0;
+  }
+}
+
+void BigInteger::ChangeSign() {
+  if (this->sign == '+') {
+    this->sign = '-';
+  } else {
+    this->sign = '+';
+  }
 }
 
 
@@ -89,10 +112,29 @@ std::ostream &operator<<(std::ostream &o, BigInteger &integer) {
   return o;
 }
 
-BigInteger operator +(BigInteger A, const BigInteger &B) {
+bool CompareIntegerParts(const BigInteger & A, const BigInteger & B) {
+  //  Function returns 1 if abs(A) > abs(B) and 0 otherwise
+
+  if (A.Size() > B.Size()) {
+    return true;
+  } else if (A.Size() < B.Size()) {
+    return false;
+  }
+
+  for (int i = A.Size(); i > 0; i--) {
+    if (A.digits[i] > B.digits[i]) {
+      return true;
+    } else if (A.digits[i] < B.digits[i]) {
+      return false;
+    }
+  }
+
+  return false;  //  if this line is reached abs(A) == abs(B)
+}
+
+BigInteger AddAbsoluteValues(BigInteger A, BigInteger B) {
   BigInteger result;
   int t = 0;
-
   for (int i = 1; i <= A.Size() || i <= B.Size() || t > 0; i++, t /= 10) {
     if (i <= A.Size()) {
       t += A.digits[i];
@@ -101,23 +143,101 @@ BigInteger operator +(BigInteger A, const BigInteger &B) {
       t += B.digits[i];
     }
 
-    std::cout << "Am ajuns la litera " << i << '\n';
-
-    result.digits.SetSize(i);
+    //result.digits.SetSize(i);
     result.digits[i] = t % 10;
   }
-  std::cout << "Am ajuns aici\n";
-  std::cout << result << '\n';
   return result;
 }
-//
-//BigInteger BigInteger::operator +(BigInteger a) {
-//  BigInteger result;
-//  int t = 0;
-//  for (int i = 1; i <= this->Size() || i <= a.Size() || t != 0; i++, t /= 10) {
-//    t += this->digits[i] + a[i];
-//    this->digits[i] = t % 10;
-//  }
-//
-//  return result;
-//}
+
+
+BigInteger SubtractAbsoluteValues(BigInteger A, BigInteger B) {
+  int t = 0;
+
+  BigInteger result = A; result.sign = '+';
+  for (int i = 1; i <= result.Size(); i++) {
+    if (i <= B.Size()) {
+      result.digits[i] -= (B.digits[i] + t);
+    } else {
+      result.digits[i] -= t;
+    }
+
+    if (result.digits[i] < 0) {
+      t = 1;
+    } else {
+      t = 0;
+    }
+
+    result.digits[i] += 10 * t;
+  }
+
+  result.Fix();
+
+  return result;
+}
+
+
+BigInteger operator +(BigInteger A, const BigInteger &B) {
+  BigInteger result;
+
+  if (A.sign == '+' && B.sign == '+') {
+    result = AddAbsoluteValues(A, B);
+    return result;
+  }
+
+  if (A.sign == '-' && B.sign == '-') {
+    result = AddAbsoluteValues(A, B);
+    result.ChangeSign();
+    return result;
+  }
+
+  if (A.sign == '-' && B.sign == '+') {
+    A.ChangeSign();
+    result = B - A;
+    return result;
+  }
+
+  if (A.sign == '+' && B.sign == '-') {
+    BigInteger B_copy = B; B_copy.ChangeSign();
+    result = A - B_copy;
+    return result;
+  }
+}
+
+
+BigInteger operator -(BigInteger A, BigInteger const & B) {
+  BigInteger result;
+
+  if (A.sign == '+' && B.sign == '-') {
+    BigInteger B_copy = B;
+    B_copy.ChangeSign();
+    result = A + B_copy;
+    return result;
+  }
+
+  if (A.sign == '+' && B.sign == '+') {
+    if(CompareIntegerParts(B, A)) {  //  if A < B
+      result = B - A;
+      result.ChangeSign();
+    } else {
+      result = SubtractAbsoluteValues(A, B);
+    }
+    return result;
+  }
+
+  if (A.sign == '-' && B.sign == '-') {
+    if (CompareIntegerParts(B, A)) {
+      result = SubtractAbsoluteValues(B, A);
+    } else {
+      result = SubtractAbsoluteValues(A, B);
+      result.ChangeSign();
+    }
+    return result;
+  }
+
+  if (A.sign == '-' && B.sign == '+') {
+    A.ChangeSign();
+    result = A + B;
+    result.ChangeSign();
+    return result;
+  }
+}

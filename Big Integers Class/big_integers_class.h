@@ -15,17 +15,21 @@ private:
 
 public:
   BigInteger() : sign('+') {}
-//  ~BigInteger() {
-//    digits.~Vector();
-//  }
 
   char& Sign();
   int Size() const;
   int& operator[](int index);
   int operator[](int index) const;
-  friend BigInteger operator +(BigInteger A, BigInteger const & B);
+  void Fix();
+  void ChangeSign();
+  friend bool CompareIntegerParts(const BigInteger &A, const BigInteger &B);
+  friend BigInteger AddAbsoluteValues(BigInteger A, BigInteger B);
+  friend BigInteger SubtractAbsoluteValues(BigInteger A, BigInteger B);
+
   friend std::istream &operator >>(std::istream &i, BigInteger &integer);
   friend std::ostream &operator <<(std::ostream &o, BigInteger &integer);
+  friend BigInteger operator +(BigInteger A, BigInteger const & B);
+  friend BigInteger operator -(BigInteger A, BigInteger const & B);
 };
 
 #endif //OOP_BIG_INTEGERS_CLASS_H
