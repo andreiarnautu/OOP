@@ -5,6 +5,7 @@ Vector<Type >::Vector() {
   capacity = 2;
   size = 0;
   v = new Type[2];
+  v[0] = v[1] = 0;
 }
 
 template<class Type >
@@ -97,14 +98,14 @@ void Vector<Type >::Reset() {
 template <class Type>
 Type& Vector<Type >::operator[](int index) {
   if (index >= capacity) {
-    int *new_v = new Type[index + 1];
+    int *new_v = new Type[(index + 1) * 2];
     for (int i = 0; i <= index; i++) {
       new_v[i] = this->v[i];
     }
     delete[] v;
     v = new_v;
 
-    this->capacity = index + 1; this->size = index;
+    this->capacity = (index + 1) * 2; this->size = index;
   }
   return v[index];
 }

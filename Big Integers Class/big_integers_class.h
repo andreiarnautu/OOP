@@ -20,16 +20,23 @@ public:
   int Size() const;
   int& operator[](int index);
   int operator[](int index) const;
+
   void Fix();
   void ChangeSign();
+
   friend bool CompareIntegerParts(const BigInteger &A, const BigInteger &B);
-  friend BigInteger AddAbsoluteValues(BigInteger A, BigInteger B);
-  friend BigInteger SubtractAbsoluteValues(BigInteger A, BigInteger B);
 
   friend std::istream &operator >>(std::istream &i, BigInteger &integer);
   friend std::ostream &operator <<(std::ostream &o, BigInteger &integer);
+
+  friend BigInteger AddAbsoluteValues(BigInteger A, BigInteger B);
+  friend BigInteger SubtractAbsoluteValues(BigInteger A, BigInteger B);
   friend BigInteger operator +(BigInteger A, BigInteger const & B);
   friend BigInteger operator -(BigInteger A, BigInteger const & B);
+
+  friend BigInteger operator *(BigInteger A, BigInteger const & B);
+
+  friend BigInteger GetMaxAbsoluteValue(const BigInteger & A, const BigInteger & B);
 };
 
 #endif //OOP_BIG_INTEGERS_CLASS_H

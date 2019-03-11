@@ -29,9 +29,17 @@ void TestBigIntegerDifference() {
   std::cout << d;
 }
 
+void TestBigIntegerMultiplication() {
+  BigInteger a, b, c;
+  std::cin >> a >> b >> c;
+  BigInteger d = a * b * c;
+  std::cout << d;
+}
+
 int main() {
   //TestVector();
   //TestBigIntegerSum();
-  TestBigIntegerDifference();
+  //TestBigIntegerDifference();
+  TestBigIntegerMultiplication();
   return 0;
 }

@@ -8,9 +8,9 @@
 /*
  *  TODO:
  *    -> the sum of 2 big integers (by overloading the operator '+') - DONE
- *    -> the difference of 2 big integers (by overloading the operator '-')
- *    -> the product of 2 big integers (by overloading the operator '*')
- *    -> the maximum between the absolute values of 2 big integers
+ *    -> the difference of 2 big integers (by overloading the operator '-') - DONE
+ *    -> the product of 2 big integers (by overloading the operator '*') - DONE
+ *    -> the maximum between the absolute values of 2 big integers - DONE
  *    -> compute the quotient when dividing 2 big integers (by overloading the operator '/') -> returns BigInteger
  *    -> compute the remainder of the division of 2 big integers (by overloading operator '%'); check for division by Zero
  *    -> compute the integer part of the square root of a big integer's integer part -> returns BigInteger
@@ -54,6 +54,7 @@ void BigInteger::Fix() {
     this->digits[1] = 0;
   }
 }
+
 
 void BigInteger::ChangeSign() {
   if (this->sign == '+') {
@@ -112,6 +113,7 @@ std::ostream &operator<<(std::ostream &o, BigInteger &integer) {
   return o;
 }
 
+
 bool CompareIntegerParts(const BigInteger & A, const BigInteger & B) {
   //  Function returns 1 if abs(A) > abs(B) and 0 otherwise
 
@@ -131,6 +133,7 @@ bool CompareIntegerParts(const BigInteger & A, const BigInteger & B) {
 
   return false;  //  if this line is reached abs(A) == abs(B)
 }
+
 
 BigInteger AddAbsoluteValues(BigInteger A, BigInteger B) {
   BigInteger result;
@@ -240,4 +243,47 @@ BigInteger operator -(BigInteger A, BigInteger const & B) {
     result.ChangeSign();
     return result;
   }
+}
+
+
+BigInteger operator *(BigInteger A, BigInteger const & B) {
+  BigInteger result; result.digits.SetSize(A.Size() + B.Size() - 1);
+
+  for (int i = 1; i <= A.Size(); i++) {
+    for (int j = 1; j <= B.Size(); j++) {
+      result.digits[i + j - 1] += A.digits[i] * B.digits[j];
+    }
+  }
+
+  int t = 0;
+  for (int i = 1; i <= result.Size(); i++) {
+    result.digits[i] += t;
+    t = result.digits[i] / 10;
+    result.digits[i] %= 10;
+  }
+
+  if (t != 0) {
+    result.digits[result.Size() + 1] = t;
+  }
+
+  //  Check the sign of the result.
+  if (A.sign == '+' && B.sign == '-') {
+    result.sign = '-';
+  }
+  if (A.sign == '-' && B.sign == '+') {
+    result.sign = '-';
+  }
+
+  return result;
+}
+
+
+BigInteger GetMaxAbsoluteValue(const BigInteger & A, const BigInteger & B) {
+  if (CompareIntegerParts(A, B)) {
+    BigInteger result = A; result.sign = '+';
+    return result;
+  }
+
+  BigInteger result = B; result.sign = '+';
+  return result;
 }
