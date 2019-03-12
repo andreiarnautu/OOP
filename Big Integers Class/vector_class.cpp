@@ -107,6 +107,10 @@ Type& Vector<Type >::operator[](int index) {
 
     this->capacity = (index + 1) * 2; this->size = index;
   }
+
+  if (index >= size) {
+    size = index;
+  }
   return v[index];
 }
 

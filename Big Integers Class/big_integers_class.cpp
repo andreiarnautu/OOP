@@ -2,6 +2,7 @@
   *  This file contains all the functions implemented for the BigInteger class.
   *  add_executable("Lab 2" constructor_destructor.cpp)
   */
+#include <cstdlib>
 #include <iostream>
 #include "big_integers_class.h"
 
@@ -11,8 +12,8 @@
  *    -> the difference of 2 big integers (by overloading the operator '-') - DONE
  *    -> the product of 2 big integers (by overloading the operator '*') - DONE
  *    -> the maximum between the absolute values of 2 big integers - DONE
- *    -> compute the quotient when dividing 2 big integers (by overloading the operator '/') -> returns BigInteger
- *    -> compute the remainder of the division of 2 big integers (by overloading operator '%'); check for division by Zero
+ *    -> compute the quotient when dividing 2 big integers (by overloading the operator '/') -> returns BigInteger - DONE
+ *    -> compute the remainder of the division of 2 big integers (by overloading operator '%'); check for division by Zero - DONE
  *    -> compute the integer part of the square root of a big integer's integer part -> returns BigInteger
  */
 
@@ -36,9 +37,37 @@ int BigInteger::operator[](int index) const {
 }
 
 
+void BigInteger::operator =(int value) {
+  this->digits.Reset();
+
+  if (value < 0) {
+    this->sign = '-';
+    value *= -1;
+  }
+
+  int index = 0;
+  do {
+    index++;
+    this->digits[index] = value % 10;
+    value /= 10;
+  } while (value != 0);
+
+}
+
+
 void Swap(int& a, int& b) {
   int c = a;
   a = b; b = c;
+}
+
+
+bool BigInteger::IsNull() {
+  this->Fix();
+
+  if (this->Size() == 1 && this->digits[1] == 0) {
+    return true;
+  }
+  return false;
 }
 
 
@@ -286,4 +315,74 @@ BigInteger GetMaxAbsoluteValue(const BigInteger & A, const BigInteger & B) {
 
   BigInteger result = B; result.sign = '+';
   return result;
+}
+
+
+BigInteger operator /(BigInteger A, BigInteger const & B) {
+  //  Let's suppose A = B * C + R.
+  BigInteger B_copy = B; B_copy.sign = '+'; //  we need a positive copy of B to subtract from R
+
+  if (B_copy.IsNull()) {
+    std::cout << "Error: Division by zero(0).\n";
+    exit(0);
+  }
+
+  BigInteger C, R;
+  C.digits.SetSize(A.Size());
+  R = 0;
+
+  BigInteger ten; ten = 10;
+
+  for (int i = A.Size(); i > 0; i--) {
+    R = R * ten; R.digits[1] = A.digits[i]; R.Fix();
+
+    C.digits[i] = 0;
+    while (CompareIntegerParts(B, R) == false) {  //  while B <= R
+      C.digits[i] ++;
+      R = R - B_copy;
+    }
+  }
+
+  if (A.sign == '+' && B.sign == '-') {
+    C.sign = '-';
+  }
+  if (A.sign == '-' && B.sign == '+') {
+    C.sign = '-';
+  }
+
+  C.Fix();
+  return C;
+}
+
+BigInteger operator %(BigInteger A, BigInteger const & B) {
+  //  Let's suppose A = B * C + R.
+  BigInteger B_copy = B; B_copy.sign = '+';
+
+  if (B_copy.IsNull()) {
+    BigInteger result; result = 0;
+    return result;
+  }
+
+  BigInteger C, R;
+  C.digits.SetSize(A.Size());
+  R = 0;
+
+  BigInteger ten; ten = 10;
+
+  for (int i = A.Size(); i > 0; i--) {
+    R = R * ten; R.digits[1] = A.digits[i]; R.Fix();
+
+    C.digits[i] = 0;
+    while (CompareIntegerParts(B, R) == false) {  //  while B <= R
+      C.digits[i] ++;
+      R = R - B_copy;
+    }
+  }
+
+  if (A.sign == '-') {
+    R.sign = '-';
+  }
+
+  R.Fix();
+  return R;
 }

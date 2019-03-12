@@ -36,10 +36,21 @@ void TestBigIntegerMultiplication() {
   std::cout << d;
 }
 
+void TestDivision() {
+  BigInteger a; a = -100;
+  BigInteger b; b = 2;
+  BigInteger e; e = -5;
+  BigInteger c; c = a / b / e;
+  BigInteger d; d = a % e;
+  std::cout << c << '\n' << d << '\n';
+}
+
 int main() {
   //TestVector();
   //TestBigIntegerSum();
   //TestBigIntegerDifference();
-  TestBigIntegerMultiplication();
+  //TestBigIntegerMultiplication();
+  //TestDivision();
+
   return 0;
 }

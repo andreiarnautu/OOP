@@ -21,6 +21,9 @@ public:
   int& operator[](int index);
   int operator[](int index) const;
 
+  void operator =(int value);
+
+  bool IsNull();
   void Fix();
   void ChangeSign();
 
@@ -37,6 +40,9 @@ public:
   friend BigInteger operator *(BigInteger A, BigInteger const & B);
 
   friend BigInteger GetMaxAbsoluteValue(const BigInteger & A, const BigInteger & B);
+
+  friend BigInteger operator /(BigInteger A, BigInteger const & B);
+  friend BigInteger operator %(BigInteger A, BigInteger const & B);
 };
 
 #endif //OOP_BIG_INTEGERS_CLASS_H
