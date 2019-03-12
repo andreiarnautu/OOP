@@ -16,12 +16,22 @@ private:
 public:
   BigInteger() : sign('+') {}
 
+  BigInteger(int value) {
+    *this = value;
+  }
+
+  BigInteger(const BigInteger &A) {
+    this->sign = A.sign;
+    this->digits = A.digits;
+  }
+
   char& Sign();
   int Size() const;
   int& operator[](int index);
   int operator[](int index) const;
 
   void operator =(int value);
+  void operator =(BigInteger A);
 
   bool IsNull();
   void Fix();
@@ -43,6 +53,8 @@ public:
 
   friend BigInteger operator /(BigInteger A, BigInteger const & B);
   friend BigInteger operator %(BigInteger A, BigInteger const & B);
+
+  friend BigInteger Sqrt(BigInteger A);
 };
 
 #endif //OOP_BIG_INTEGERS_CLASS_H

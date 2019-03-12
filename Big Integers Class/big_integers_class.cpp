@@ -1,19 +1,18 @@
 /**
   *  This file contains all the functions implemented for the BigInteger class.
-  *  add_executable("Lab 2" constructor_destructor.cpp)
   */
 #include <cstdlib>
 #include <iostream>
 #include "big_integers_class.h"
 
 /*
- *  TODO:
- *    -> the sum of 2 big integers (by overloading the operator '+') - DONE
- *    -> the difference of 2 big integers (by overloading the operator '-') - DONE
- *    -> the product of 2 big integers (by overloading the operator '*') - DONE
- *    -> the maximum between the absolute values of 2 big integers - DONE
- *    -> compute the quotient when dividing 2 big integers (by overloading the operator '/') -> returns BigInteger - DONE
- *    -> compute the remainder of the division of 2 big integers (by overloading operator '%'); check for division by Zero - DONE
+ *  Operations implemented:
+ *    -> the sum of 2 big integers (by overloading the operator '+')
+ *    -> the difference of 2 big integers (by overloading the operator '-')
+ *    -> the product of 2 big integers (by overloading the operator '*')
+ *    -> the maximum between the absolute values of 2 big integers
+ *    -> compute the quotient when dividing 2 big integers (by overloading the operator '/') -> returns BigInteger
+ *    -> compute the remainder of the division of 2 big integers (by overloading operator '%'); check for division by Zero
  *    -> compute the integer part of the square root of a big integer's integer part -> returns BigInteger
  */
 
@@ -43,6 +42,8 @@ void BigInteger::operator =(int value) {
   if (value < 0) {
     this->sign = '-';
     value *= -1;
+  } else {
+    this->sign = '+';
   }
 
   int index = 0;
@@ -52,6 +53,12 @@ void BigInteger::operator =(int value) {
     value /= 10;
   } while (value != 0);
 
+}
+
+
+void BigInteger::operator =(BigInteger A) {
+  this->sign = A.sign;
+  this->digits = A.digits;
 }
 
 
@@ -354,6 +361,7 @@ BigInteger operator /(BigInteger A, BigInteger const & B) {
   return C;
 }
 
+
 BigInteger operator %(BigInteger A, BigInteger const & B) {
   //  Let's suppose A = B * C + R.
   BigInteger B_copy = B; B_copy.sign = '+';
@@ -385,4 +393,30 @@ BigInteger operator %(BigInteger A, BigInteger const & B) {
 
   R.Fix();
   return R;
+}
+
+
+BigInteger Sqrt(BigInteger A) {
+  A.sign = '+';
+
+  BigInteger x0(A), aux(1);
+  BigInteger x1; x1 = x0 + aux;
+  //std::cout << x0 << " " << aux << " " << x1 << '\n';
+  x1 = x1 / 2;
+
+  std::cout << x0 << " " << x1 << '\n';
+
+  while(CompareIntegerParts(x0, x1)) {
+    x0 = x1;
+    BigInteger two(2);
+
+    //  x1 = (x1 + A/x1) / 2
+    aux = A / x1;
+    x1 = x1 + aux;
+    x1 = x1 / 2;
+
+    std::cout << x0 << " " << x1 << '\n';
+  }
+
+  return x0;
 }
