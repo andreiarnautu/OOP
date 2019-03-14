@@ -36,7 +36,7 @@ int BigInteger::operator[](int index) const {
 }
 
 
-void BigInteger::operator =(int value) {
+BigInteger& BigInteger::operator =(int value) {
   this->digits.Reset();
 
   if (value < 0) {
@@ -53,12 +53,22 @@ void BigInteger::operator =(int value) {
     value /= 10;
   } while (value != 0);
 
+  return *this;
 }
 
 
-void BigInteger::operator =(BigInteger A) {
+BigInteger& BigInteger::operator =(BigInteger A) {
   this->sign = A.sign;
   this->digits = A.digits;
+
+  return *this;
+}
+
+bool BigInteger::operator == (const BigInteger & A) {
+  if (CompareIntegerParts(*this, A) == false && CompareIntegerParts(A, *this) == false) {
+    return true;
+  }
+  return false;
 }
 
 
@@ -401,7 +411,6 @@ BigInteger Sqrt(BigInteger A) {
 
   BigInteger x0(A), aux(1);
   BigInteger x1; x1 = x0 + aux;
-  //std::cout << x0 << " " << aux << " " << x1 << '\n';
   x1 = x1 / 2;
 
   std::cout << x0 << " " << x1 << '\n';

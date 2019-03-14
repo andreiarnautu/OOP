@@ -30,8 +30,10 @@ public:
   int& operator[](int index);
   int operator[](int index) const;
 
-  void operator =(int value);
-  void operator =(BigInteger A);
+  BigInteger& operator =(int value);
+  BigInteger& operator =(BigInteger A);
+
+  bool operator ==(const BigInteger &A);
 
   bool IsNull();
   void Fix();

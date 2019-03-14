@@ -71,6 +71,13 @@ void TestArrayMaxAbsoluteValue() {
   std::cout << c;
 }
 
+void TestOperator() {
+  BigInteger a, b, c;
+  a = b = c = 10;
+
+  std::cout << a << " " << b << " " << c;
+}
+
 int main() {
   //TestVector();
   //TestBigIntegerSum();
@@ -81,6 +88,13 @@ int main() {
   //TestReadingArray();
   //TestArrayMultiplier();
   //TestArrayMaxAbsoluteValue();
+  //TestOperator();
+  BigInteger x(12321), y(7854);
+  if (x == x / y * y + x % y) {
+    std::cout << "Merge\n";
+  } else {
+    std::cout << "Nu merge\n";
+  }
 
   return 0;
 }
