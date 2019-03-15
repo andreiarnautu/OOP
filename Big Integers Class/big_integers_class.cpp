@@ -413,8 +413,6 @@ BigInteger Sqrt(BigInteger A) {
   BigInteger x1; x1 = x0 + aux;
   x1 = x1 / 2;
 
-  std::cout << x0 << " " << x1 << '\n';
-
   while(CompareIntegerParts(x0, x1)) {
     x0 = x1;
     BigInteger two(2);
@@ -423,8 +421,6 @@ BigInteger Sqrt(BigInteger A) {
     aux = A / x1;
     x1 = x1 + aux;
     x1 = x1 / 2;
-
-    std::cout << x0 << " " << x1 << '\n';
   }
 
   return x0;
