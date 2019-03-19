@@ -38,7 +38,7 @@ Vector<Type >& Vector<Type >::operator =(const Vector<Type > &v2) {
 
   delete[] v;
 
-  this->v = new int[this->capacity];
+  this->v = new Type[this->capacity];
   for (int i = 1; i <= this->size; i++) {
     this->v[i] = v2.v[i];
   }
