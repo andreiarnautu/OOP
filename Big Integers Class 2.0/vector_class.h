@@ -103,15 +103,19 @@ T Vector<T >::operator [](int index) const {
 template<class T >
 T& Vector<T >::operator[](int index) {
     if (index >= m_capacity) {
-        T *new_array = new T[index + 1];
+        T *new_array = new T[index + 5];
 
-        for (int i = 0; i <= index; i++) {
+        for (int i = 0; i < m_capacity; i++) {
             new_array[i] = m_array[i];
         }
+        for (int i = m_capacity; i < index + 5; i++) {
+            new_array[i] = 0;
+        }
+
         delete [] m_array;
         m_array = new_array;
 
-        m_capacity = index + 1; m_size = index;
+        m_capacity = index + 5; m_size = index;
     }
 
     if (index >= m_size) {

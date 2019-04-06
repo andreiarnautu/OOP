@@ -4,6 +4,7 @@
 #ifndef OOP_BIG_INTEGER_CLASS_H
 #define OOP_BIG_INTEGER_CLASS_H
 
+#include <cstdlib>
 #include <iostream>
 #include "big_positive_integer_class.h"
 
@@ -42,8 +43,12 @@ private:
     BigInteger AddAbsoluteValues(const BigInteger& a, const BigInteger& b);
     BigInteger SubtractAbsoluteValues(const BigInteger& a, const BigInteger& b);
 public:
-    BigInteger operator +(const BigInteger& a);
-    BigInteger operator -(const BigInteger& a);
+    BigInteger operator +(BigInteger const& a);
+    BigInteger operator -(BigInteger const& a);
+    BigInteger operator *(BigInteger const &a);
+    BigInteger operator /(BigInteger const& a);
+    BigInteger operator %(BigInteger const& a);
+    BigInteger Sqrt();
 };
 
 
@@ -265,10 +270,10 @@ BigInteger BigInteger::AddAbsoluteValues(const BigInteger& a, const BigInteger& 
 
     for (int i = 1, t = 0; i <= a.m_size || i <= b.m_size || t > 0; i++, t /= 10) {
         if (i <= a.m_size) {
-            t += a.m_array[i];
+            t += a[i];
         }
         if (i <= b.m_size) {
-            t += b.m_array[i];
+            t += b[i];
         }
 
         result[i] = t % 10;
@@ -303,19 +308,194 @@ BigInteger BigInteger::SubtractAbsoluteValues(const BigInteger &a, const BigInte
 }
 
 
-BigInteger BigInteger::operator +(const BigInteger &a) {
+BigInteger BigInteger::operator +(BigInteger const& a) {
     BigInteger result;
 
     if (this->m_sign == '+' && a.m_sign == '+') {
         result = AddAbsoluteValues(*this, a);
     } else if (this->m_sign == '+' && a.m_sign == '-') {
+        int compare_result = this->CompareIntegerParts(a);
 
+        if (compare_result >= 0) {
+            result = SubtractAbsoluteValues(*this, a);
+        } else {
+            result = SubtractAbsoluteValues(a, *this);
+            result.m_sign = '-';
+        }
+    } else if (this->m_sign == '-' && a.m_sign == '+') {
+        int compare_result = this->CompareIntegerParts(a);
+
+        if (compare_result >= 0) {
+            result = SubtractAbsoluteValues(*this, a);
+            result.m_sign = '-';
+        } else {
+            result = SubtractAbsoluteValues(a, *this);
+        }
+    } else {
+        result = AddAbsoluteValues(*this, a);
+        result.m_sign = '-';
     }
+
+    result.Fix();
+    return result;
 }
 
 
-BigInteger BigInteger::operator -(const BigInteger &a) {
+BigInteger BigInteger::operator -(BigInteger const& a) {
+    BigInteger result;
 
+    if (this->m_sign == '+' && a.m_sign == '+') {
+        int compare_result = this->CompareIntegerParts(a);
+
+        if (compare_result >= 0) {
+            result = SubtractAbsoluteValues(*this, a);
+        } else {
+            result = SubtractAbsoluteValues(a, *this);
+            result.m_sign = '-';
+        }
+    } else if (this->m_sign == '+' && a.m_sign == '-') {
+        result = AddAbsoluteValues(*this, a);
+    } else if (this->m_sign == '-' && a.m_sign == '+') {
+        result = AddAbsoluteValues(*this, a);
+        result.m_sign = '-';
+    } else {
+        int compare_result = this->CompareIntegerParts(a);
+
+        if (compare_result >= 0) {
+            result = SubtractAbsoluteValues(*this, a);
+            result.m_sign = '-';
+        } else {
+            result = SubtractAbsoluteValues(a, *this);
+        }
+    }
+
+    result.Fix();
+    return result;
+}
+
+
+BigInteger BigInteger::operator *(BigInteger const& a) {
+    BigInteger result;
+
+    for (int i = 1; i <= this->m_size; i++) {
+        for (int j = 1; j <= a.m_size; j++) {
+            result[i + j - 1] += this->operator[](i) * a[j];
+        }
+    }
+
+    int t = 0;
+    for (int i = 1; i <= result.m_size; i++) {
+        result[i] += t;
+        t = result[i] / 10;
+        result[i] %= 10;
+    }
+    if (t != 0) {
+        result[result.m_size + 1] = t;
+    }
+
+    //  Compute the sign of the result.
+    if (this->m_sign == '-' && a.m_sign == '+') {
+        result.m_sign = '-';
+    } else if (this->m_sign == '+' && a.m_sign == '-') {
+        result.m_sign = '-';
+    }
+
+    result.Fix();
+    return result;
+}
+
+
+BigInteger BigInteger::operator /(BigInteger const &a) {
+    //  Let's suppose this = b * c + r;
+
+    BigInteger b(a);  //  For easier implementation (workaround for const &a)
+    if (b.IsNull()) {
+        std::cout << "Error: Division by zero(0).\n";
+        exit(0);
+    }
+
+    BigInteger c, r;
+    BigInteger ten(10);
+
+    for (int i = m_size; i > 0; i--) {
+        r = r * ten;
+        r[1] = this->operator[](i);
+        r.Fix();
+
+        while (b.CompareIntegerParts(r) < 1) {  //  while (b <= r)
+            c[i]++;
+            r = SubtractAbsoluteValues(r, b);
+        }
+    }
+
+    //  Compute the sign of the result.
+    if (this->m_sign == '-' && a.m_sign == '+') {
+        c.m_sign = '-';
+    } else if (this->m_sign == '+' && a.m_sign == '-') {
+        c.m_sign = '-';
+    }
+
+    c.Fix();
+    return c;
+}
+
+
+BigInteger BigInteger::operator%(BigInteger const &a) {
+    //  Let's suppose this = b * c + r;
+
+    BigInteger b(a);  //  For easier implementation (workaround for const &a)
+    if (b.IsNull()) {
+        std::cout << "Error: Division by zero(0).\n";
+        exit(0);
+    }
+
+    BigInteger c, r;
+    BigInteger ten(10);
+
+    for (int i = m_size; i > 0; i--) {
+        r = r * ten;
+        r[1] = this->operator[](i);
+        r.Fix();
+
+        while (b.CompareIntegerParts(r) < 1) {  //  while (b <= r)
+            c[i]++;
+            r = SubtractAbsoluteValues(r, b);
+        }
+    }
+
+    //  Compute the sign of the result.
+    if (this->m_sign == '-') {
+        r.m_sign = '-';
+    }
+
+    r.Fix();
+    return r;
+}
+
+
+BigInteger BigInteger::Sqrt() {
+    if (this->m_sign == '-') {
+        std::cout << "Sqrt of a negative number? C'mon, you can do better than that...\n";
+        exit(0);
+    }
+
+    BigInteger a(*this);
+
+    BigInteger x0(a), aux(1), x1;
+    x1 = x0 + aux;
+    x1 = x1 / 2;
+
+    while (x0.CompareIntegerParts(x1)) {  //  while x0 > x1
+        x0 = x1;
+        BigInteger two(2);
+
+        //  x1 = (x1 + a/x1) / 2;
+        aux = a / x1;
+        x1 = x1 + aux;
+        x1 = x1 / two;
+    }
+
+    return x0;
 }
 
 #endif //OOP_BIG_INTEGER_CLASS_H

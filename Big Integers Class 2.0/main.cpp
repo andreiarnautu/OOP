@@ -15,7 +15,46 @@ void TestConstructor() {
     std::cout << c;
 }
 
-int main() {
+void TestAdditionAndSubtraction() {
+    BigInteger a(1023), b(-5012), d(5);
+    BigInteger c = a - b + d;
 
+    std::cout << c << '\n';
+}
+
+void TestMultiplication() {
+    BigInteger a(-12), b(101);
+    BigInteger c = a * b;
+
+    std::cout << c << '\n';
+}
+
+void TestDivision() {
+    BigInteger a(1300), b(40);
+    BigInteger c = a % b;
+
+    std::cout << c << '\n';
+}
+
+
+void TestSqrt() {
+    BigInteger a(-1025), b = a.Sqrt();
+
+    std::cout << b;
+}
+
+
+void FinalTest() {
+    BigInteger x(23123123), y(89234);
+
+    if (x == x / y * y + x % y) {
+        std::cout << "ok\n";
+    } else {
+        std::cout << "not ok\n";
+    }
+}
+
+int main() {
+    FinalTest();
     return 0;
 }

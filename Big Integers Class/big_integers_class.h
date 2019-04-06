@@ -46,15 +46,15 @@ public:
 
   friend BigInteger AddAbsoluteValues(BigInteger A, BigInteger B);  //  ok
   friend BigInteger SubtractAbsoluteValues(BigInteger A, BigInteger B);  //  ok
-  friend BigInteger operator +(BigInteger A, BigInteger const & B);
-  friend BigInteger operator -(BigInteger A, BigInteger const & B);
+  friend BigInteger operator +(BigInteger A, BigInteger const & B);  //  ok
+  friend BigInteger operator -(BigInteger A, BigInteger const & B);  //  ok
 
-  friend BigInteger operator *(BigInteger A, BigInteger const & B);
+  friend BigInteger operator *(BigInteger A, BigInteger const & B);  //  ok
 
   friend BigInteger GetMaxAbsoluteValue(const BigInteger & A, const BigInteger & B);
 
-  friend BigInteger operator /(BigInteger A, BigInteger const & B);
-  friend BigInteger operator %(BigInteger A, BigInteger const & B);
+  friend BigInteger operator /(BigInteger A, BigInteger const & B);  //  ok
+  friend BigInteger operator %(BigInteger A, BigInteger const & B);  //  ok
 
   friend BigInteger Sqrt(BigInteger A);
 };
