@@ -54,7 +54,23 @@ void FinalTest() {
     }
 }
 
+
+void TestIterator() {
+    Vector<int > v;
+    v[1] = 2; v[2] = 3; v[3] = 5; v[4] = 7;
+
+    for (Vector<int >::Iterator it = v.begin(); it != v.end(); it++) {
+        std::cout << *it << " ";
+    }
+    std::cout << '\n';
+    for (Vector<int >::Iterator it = v.rbegin(); it != v.rend(); it--) {
+        std::cout << *it << " ";
+    }
+    std::cout << '\n';
+}
+
 int main() {
     FinalTest();
+    TestIterator();
     return 0;
 }

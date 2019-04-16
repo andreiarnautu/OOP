@@ -12,8 +12,6 @@ class BigInteger : public BigPositiveInteger {
 private:
     char m_sign;
 
-
-
 public:
     //  Constructors
     BigInteger();
@@ -33,15 +31,16 @@ public:
     BigInteger& operator =(const BigInteger& a);
 
 
-    //  Comparation stuff
+    //  Compare stuff
     int CompareIntegerParts(const BigPositiveInteger& a) override;
     bool operator ==(const BigInteger & a);
     bool operator < (const BigInteger & a);
 
-    //  Operations with big numbers
 private:
     BigInteger AddAbsoluteValues(const BigInteger& a, const BigInteger& b);
     BigInteger SubtractAbsoluteValues(const BigInteger& a, const BigInteger& b);
+
+
 public:
     BigInteger operator +(BigInteger const& a);
     BigInteger operator -(BigInteger const& a);
@@ -52,7 +51,7 @@ public:
 };
 
 
-BigInteger::BigInteger() {
+BigInteger::BigInteger() : BigPositiveInteger() {
     m_sign = '+';
 }
 
@@ -88,8 +87,7 @@ BigInteger::BigInteger(int value) {
 
 
 BigInteger::BigInteger(const BigInteger &a) {
-    delete [] m_array;
-
+    //delete [] m_array;
     m_capacity = a.m_capacity;
     m_size = a.m_size;
     m_array = new int[m_capacity];

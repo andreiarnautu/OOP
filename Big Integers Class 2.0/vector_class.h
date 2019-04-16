@@ -22,6 +22,15 @@ public:
 
     virtual T operator [](int index) const;
     virtual T& operator [](int index);
+
+    //  Iterator stuff
+public:
+    typedef T* Iterator;
+
+    Iterator begin();
+    Iterator end();
+    Iterator rbegin();
+    Iterator rend();
 };
 
 
@@ -111,7 +120,6 @@ T& Vector<T >::operator[](int index) {
         for (int i = m_capacity; i < index + 5; i++) {
             new_array[i] = 0;
         }
-
         delete [] m_array;
         m_array = new_array;
 
@@ -122,6 +130,30 @@ T& Vector<T >::operator[](int index) {
         m_size = index;
     }
     return m_array[index];
+}
+
+
+template<class T>
+typename Vector<T >::Iterator Vector<T>::begin() {
+    return m_array + 1;
+}
+
+
+template<class T>
+typename Vector<T >::Iterator Vector<T>::end() {
+    return m_array + m_size + 1;
+}
+
+
+template<class T>
+typename Vector<T >::Iterator Vector<T>::rbegin() {
+    return m_array + m_size;
+}
+
+
+template<class T>
+typename Vector<T >::Iterator Vector<T>::rend() {
+    return m_array;
 }
 
 #endif //OOP_VECTOR_CLASS_H
