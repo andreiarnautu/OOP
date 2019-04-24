@@ -2,7 +2,6 @@
   *  Worg
   */
 #include <iostream>
-
 #include "vector.h"
 
 int main() {
@@ -11,7 +10,7 @@ int main() {
     for (int i = 0; i < 10; i++) {
         v[i] = i;
     }
-    v.PushBack(20); v.PushBack(25);
+    v.PushBack(20); v.PushBack(25); v[7] = 105; v[15] = 20;
 
     for (Vector<int >::Iterator it = v.begin(); it != v.end(); it++) {
         std::cout << *it << " ";

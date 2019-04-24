@@ -132,7 +132,7 @@ template <class T >
 void Vector<T>::Reserve(unsigned int capacity) {
     T *new_array = new T[capacity];
 
-    for (int i = 0; i < m_size; i++) {
+    for (int i = 0; i < static_cast<int>(m_size); i++) {
         new_array[i] = m_array[i];
     }
 
