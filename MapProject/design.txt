@@ -1,8 +1,8 @@
 Base abstract class: Graph
 
 Classes derived from the base class:
-    -> line graph
+    -> line graph - DONE
     -> tree
     -> directed acyclic graph (DAG)
-    -> general graph (no restrictions or additional properties)
-    -> complete graph
+    -> general graph (no restrictions or additional properties) - DONE
+    -> complete graph - DONE

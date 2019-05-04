@@ -1,8 +1,12 @@
 /**
   *  Worg
+  *  TODO: better idea: compute Dijkstra for each query.
   */
 #ifndef MAP_GENERAL_GRAPH_H
 #define MAP_GENERAL_GRAPH_H
+
+#include <set>
+#include <utility>
 
 #include "vector.hpp"
 #include "base_graph.hpp"
@@ -19,15 +23,16 @@ private:
     int m_size;
     Vector<std::pair<double, double > > m_nodes;
     Vector<Vector<std::pair<int, double > > > m_adjacency_list;
-    Vector<Vector<double > > m_distances;
 
 protected:
     void ResizeGraph(const int size);
     double ComputeDistance(std::pair<double, double >, std::pair<double, double >) override;
     void ComputeDistances();
+    double RunDijkstra(const int source, const int destination);
 
 public:
     GeneralGraph();
+    ~GeneralGraph();
     void CreateGraph() override;
     void AddEdge(const int u, const int v);
     double GetDistance(const int u, const int v) override;
@@ -39,22 +44,15 @@ GeneralGraph::GeneralGraph() {
 }
 
 
+GeneralGraph::~GeneralGraph() {
+
+}
+
+
 void GeneralGraph::ResizeGraph(const int size) {
     m_size = size;
     m_nodes.Resize(size + 1);
     m_adjacency_list.Resize(size + 1);
-
-
-    m_distances.Resize(size + 1);
-    for (int i = 1; i <= size; i++) {
-        m_distances[i].Resize(size + 1);
-    }
-
-    for (int i = 1; i <= size; i++) {
-        for (int j = 1; j <= size; j++) {
-            m_distances[i][j] = (i == j) ? 0 : INF;
-        }
-    }
 }
 
 
@@ -63,7 +61,6 @@ void GeneralGraph::AddEdge(const int u, const int v) {
     double node_distance = ComputeDistance(m_nodes[u], m_nodes[v]);
     m_adjacency_list[u].PushBack(std::make_pair(v, node_distance));
     m_adjacency_list[v].PushBack(std::make_pair(u, node_distance));
-    m_distances[u][v] = m_distances[v][u] = node_distance;
 }
 
 
@@ -83,7 +80,7 @@ void GeneralGraph::CreateGraph() {
         std::cin >> m_nodes[i].first >> m_nodes[i].second;
     }
 
-    std::cout << "Number or edges\n";
+    std::cout << "Number or edges:\n";
     int edge_count; std::cin >> edge_count;
 
     std::cout << "Give the edges, each on a separate line:\n";
@@ -91,28 +88,40 @@ void GeneralGraph::CreateGraph() {
         int u, v; std::cin >> u >> v;
         AddEdge(u, v);
     }
-
-    //  In the end, compute the distance between each pair of nodes.
-    ComputeDistances();
 }
 
 
-//  Compute the distance between each pair of nodes using Roy-Floyd's algorithm
-void GeneralGraph::ComputeDistances() {
-    for (int k = 1; k <= m_size; k++) {
-        for (int i = 1; i <= m_size; i++) {
-            for (int j = 1; j <= m_size; j++) {
-                if (i == k || i == j || k == j) continue;
+double GeneralGraph::RunDijkstra(const int source, const int destination) {
+    Vector<double > distance(m_size);
+    for (int i = 1; i <= m_size; i++) {
+        distance[i] = INF;
+    }
 
-                m_distances[i][j] = std::min(m_distances[i][j], m_distances[i][k] + m_distances[k][j]);
+    std::set<std::pair<double, int > > set; set.insert({0.0, source});
+
+    while (!set.empty()) {
+        double current_distance = set.begin()->first;
+        int node = set.begin()->second;
+        set.erase(set.begin());
+
+        if (distance[node] != INF) continue;
+        distance[node] = current_distance;
+
+        if (node == destination) break;
+
+        for (auto it = m_adjacency_list[node].begin(); it != m_adjacency_list[node].end(); it++) {
+            if (current_distance + it->second < distance[it->first]) {
+                set.insert({current_distance + it->second, it->first});
             }
         }
     }
+
+    return distance[destination];
 }
 
 
 double GeneralGraph::GetDistance(const int u, const int v) {
-    return m_distances[u][v];
+    return RunDijkstra(u, v);
 }
 
 
