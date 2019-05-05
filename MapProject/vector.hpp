@@ -35,6 +35,7 @@ public:
 
     void Reserve(unsigned int capacity);
     void Resize(unsigned int size);
+    void Resize(unsigned int size, const T value);
 
     void PushBack(const T& value);
     void PopBack();
@@ -44,6 +45,7 @@ public:
 
     Vector<T>& operator = (Vector<T > const&);
     void Clear();
+    void Fill(const T value);
 
     //  iterator stuff
     typedef T* Iterator;
@@ -148,6 +150,16 @@ void Vector<T>::Resize(unsigned int size) {
     m_size = size;
 }
 
+template <class T >
+void Vector<T>::Resize(unsigned int size, const T value) {
+    Reserve(size * 2);
+    m_size = size;
+
+    for (int i = 0; i < static_cast<int >(m_size); i++) {
+        m_array[i] = value;
+    }
+}
+
 
 template <class T >
 void Vector<T>::PushBack(const T& value) {
@@ -199,6 +211,13 @@ void Vector<T>::Clear() {
     m_array = new T[m_capacity];
 }
 
+
+template <class T >
+void Vector<T>::Fill(const T value) {
+    for (int i = 0; i < static_cast<int >(m_size); i++) {
+        m_array[i] = value;
+    }
+}
 
 template <class T >
 typename Vector<T>::Iterator Vector<T >::begin() {

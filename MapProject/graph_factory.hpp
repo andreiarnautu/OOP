@@ -11,6 +11,7 @@ public:
             case 0 : return new GeneralGraph;
             case 1 : return new CompleteGraph;
             case 2 : return new LineGraph;
+            case 3 : return new Tree;
             default : return new GeneralGraph;
         }
     }
