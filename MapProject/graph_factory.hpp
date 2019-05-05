@@ -12,6 +12,7 @@ public:
             case 1 : return new CompleteGraph;
             case 2 : return new LineGraph;
             case 3 : return new Tree;
+            case 4 : return new DirectedAcyclicGraph;
             default : return new GeneralGraph;
         }
     }

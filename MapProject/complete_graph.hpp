@@ -18,6 +18,7 @@ protected:
     double ComputeDistance(std::pair<double, double >, std::pair<double, double >) override;
 
 public:
+    void AddEdge(const int u, const int v) override;
     CompleteGraph();
     ~CompleteGraph();
     double GetDistance(const int u, const int v) override;
@@ -31,6 +32,11 @@ CompleteGraph::CompleteGraph() {
 
 
 CompleteGraph::~CompleteGraph() {
+
+}
+
+
+void CompleteGraph::AddEdge(const int u, const int v) {
 
 }
 
@@ -54,6 +60,10 @@ double CompleteGraph::ComputeDistance(std::pair<double, double > a, std::pair<do
 
 
 double CompleteGraph::GetDistance(const int u, const int v) {
+    if (u > m_size || v > m_size) {
+        return -1;
+    }
+
     return ComputeDistance(m_nodes[u], m_nodes[v]);
 }
 

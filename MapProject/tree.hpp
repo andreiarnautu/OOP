@@ -23,6 +23,7 @@ private:
     Vector<int > m_position, m_depth, m_list, m_log;
     Vector<double > m_partial_sum;
 
+    void AddEdge(const int u, const int v);
     void DFS(int node, int father, int level);
     void ComputeRMQ();
 
@@ -35,7 +36,6 @@ public:
     Tree();
     ~Tree();
     double GetDistance(const int u, const int v) override;
-    void AddEdge(const int u, const int v);
     void ResizeGraph(const int size);
     void CreateGraph() override;
 };
@@ -76,14 +76,13 @@ void Tree::ResizeGraph(const int size) {
     m_rmq.Resize(ComputeLog(size) + 2);
     for (int i = 0; i < static_cast<int >(m_rmq.Size()); i++) {
         m_rmq[i].Resize(size + 2, 0);
-        //m_rmq[i].Fill(0);
     }
 
-    m_position.Resize(size + 2, 0); //m_position.Fill(0);
-    m_depth.Resize(2 * (size + 2), 0); //m_depth.Fill(0);
-    m_list.Resize(2 * (size + 2), 0); //m_list.Fill(0);
-    m_log.Resize(2 * (size + 2), 0); //m_log.Fill(0);
-    m_partial_sum.Resize(size + 2, 0); //m_position.Fill(0);
+    m_position.Resize(size + 2, 0);
+    m_depth.Resize(2 * (size + 2), 0);
+    m_list.Resize(2 * (size + 2), 0);
+    m_log.Resize(2 * (size + 2), 0);
+    m_partial_sum.Resize(size + 2, 0);
 }
 
 
@@ -156,8 +155,6 @@ int Tree::LCA(int u, int v) {
         std::swap(a, b);
     }
 
-    std::cout << "From " << a << " to " << b << '\n';
-
     int level = m_log[b - a + 1];
     return (m_depth[m_rmq[level][a]] < m_depth[m_rmq[level][b - (1 << level) + 1]]) ? m_list[m_rmq[level][a]] : m_list[m_rmq[level][b - (1 << level) + 1]];
 }
@@ -166,20 +163,16 @@ int Tree::LCA(int u, int v) {
 void Tree::PrecomputeData() {
     m_depth[1] = 1; m_list_size = 0;
     DFS(1, 0, 1);
-
-    for (int i = 1; i <= m_size; i++) {
-        std::cout << i << ": " << m_partial_sum[i] << '\n';
-    }
-
     ComputeRMQ();
 }
 
 
 double Tree::GetDistance(const int u, const int v) {
+    if (u > m_size || v > m_size) {
+        return -1;
+    }
+    
     int lca = LCA(u, v);
-
-    std::cout << lca << '\n';
-
     double answer = m_partial_sum[u] + m_partial_sum[v] - 2 * m_partial_sum[lca];
     return answer;
 }

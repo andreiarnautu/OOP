@@ -1,76 +1,68 @@
 /**
   *  Worg
-  *  TODO: better idea: compute Dijkstra for each query.
   */
-#ifndef MAP_GENERAL_GRAPH_H
-#define MAP_GENERAL_GRAPH_H
-
-#include <set>
-#include <utility>
+#ifndef MAP_DAG_H
+#define MAP_DAG_H
 
 #include "vector.hpp"
 #include "base_graph.hpp"
 
+#include <set>
 #include <cmath>
 #include <utility>
 #include <iostream>
 #include <algorithm>
 
-const double INF = 2e9;
-
-class GeneralGraph : public Graph {
+class DirectedAcyclicGraph : public Graph {
 private:
     int m_size;
     Vector<std::pair<double, double > > m_nodes;
     Vector<Vector<std::pair<int, double > > > m_adjacency_list;
+    const double INF = 2e9;
 
 protected:
-    void ResizeGraph(const int size);
     double ComputeDistance(std::pair<double, double >, std::pair<double, double >) override;
-    void ComputeDistances();
+    void ResizeGraph(const int size);
     double RunDijkstra(const int source, const int destination);
 
 public:
-    GeneralGraph();
-    ~GeneralGraph();
-    void CreateGraph() override;
+    DirectedAcyclicGraph();
+    ~DirectedAcyclicGraph();
     void AddEdge(const int u, const int v);
+    void CreateGraph();
     double GetDistance(const int u, const int v) override;
 };
 
 
-GeneralGraph::GeneralGraph() {
+DirectedAcyclicGraph::DirectedAcyclicGraph() {
 
 }
 
 
-GeneralGraph::~GeneralGraph() {
+DirectedAcyclicGraph::~DirectedAcyclicGraph() {
 
 }
 
 
-void GeneralGraph::ResizeGraph(const int size) {
+double DirectedAcyclicGraph::ComputeDistance(std::pair<double, double > a, std::pair<double, double > b) {
+    return sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
+}
+
+
+void DirectedAcyclicGraph::ResizeGraph(const int size) {
     m_size = size;
     m_nodes.Resize(size + 1);
     m_adjacency_list.Resize(size + 1);
 }
 
 
-//  Add an undirected edge between {u} and {v}
-void GeneralGraph::AddEdge(const int u, const int v) {
+void DirectedAcyclicGraph::AddEdge(const int u, const int v) {
     double node_distance = ComputeDistance(m_nodes[u], m_nodes[v]);
     m_adjacency_list[u].PushBack(std::make_pair(v, node_distance));
-    m_adjacency_list[v].PushBack(std::make_pair(u, node_distance));
 }
 
 
-//  Compute the distance between two points
-double GeneralGraph::ComputeDistance(std::pair<double, double > a, std::pair<double, double > b) {
-    return sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
-}
-
-
-void GeneralGraph::CreateGraph() {
+void DirectedAcyclicGraph::CreateGraph() {
     std::cout << "Number of vertices:\n";
     int size; std::cin >> size;
     ResizeGraph(size);
@@ -80,7 +72,7 @@ void GeneralGraph::CreateGraph() {
         std::cin >> m_nodes[i].first >> m_nodes[i].second;
     }
 
-    std::cout << "Number or edges:\n";
+    std::cout << "Number of edges:\n";
     int edge_count; std::cin >> edge_count;
 
     std::cout << "Give the edges, each on a separate line:\n";
@@ -91,7 +83,7 @@ void GeneralGraph::CreateGraph() {
 }
 
 
-double GeneralGraph::RunDijkstra(const int source, const int destination) {
+double DirectedAcyclicGraph::RunDijkstra(const int source, const int destination) {
     Vector<double > distance(m_size);
     for (int i = 1; i <= m_size; i++) {
         distance[i] = INF;
@@ -120,13 +112,15 @@ double GeneralGraph::RunDijkstra(const int source, const int destination) {
 }
 
 
-double GeneralGraph::GetDistance(const int u, const int v) {
+double DirectedAcyclicGraph::GetDistance(const int u, const int v) {
     if (u > m_size || v > m_size) {
         return -1;
     }
     
-    return RunDijkstra(u, v);
+    double distance = RunDijkstra(u, v);
+    return (distance == INF) ? -1 : distance;
 }
 
 
-#endif  //  MAP_GENERAL_GRAPH_H
+
+#endif  //  MAP_DAG_H

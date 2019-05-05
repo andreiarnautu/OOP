@@ -24,6 +24,7 @@ protected:
 public:
     LineGraph();
     ~LineGraph();
+    void AddEdge(const int u, const int v) override;
     void CreateGraph() override;
     double GetDistance(const int u, const int v) override;
 };
@@ -39,6 +40,11 @@ LineGraph::~LineGraph() {
 }
 
 
+void LineGraph::AddEdge(const int u, const int v) {
+
+}
+
+
 double LineGraph::ComputeDistance(std::pair<double, double > a, std::pair<double, double > b) {
     return sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
 }
@@ -46,9 +52,9 @@ double LineGraph::ComputeDistance(std::pair<double, double > a, std::pair<double
 
 void LineGraph::ResizeGraph(const int size) {
     m_size = size;
-    m_nodes.Resize(size + 1);
-    m_fictive_index.Resize(size + 1);
-    m_partial_sums.Resize(size + 1);
+    m_nodes.Resize(size + 1, {0, 0});
+    m_fictive_index.Resize(size + 1, 0);
+    m_partial_sums.Resize(size + 1, 0);
 }
 
 
@@ -73,15 +79,20 @@ void LineGraph::CreateGraph() {
         m_fictive_index[node] = i;
 
         if (previous_node != -1) {
-            m_partial_sums[i] = m_partial_sums[i - 1] + GetDistance(previous_node, node);
+            m_partial_sums[i] = m_partial_sums[i - 1] + ComputeDistance(m_nodes[previous_node], m_nodes[node]);
         } else {
             m_partial_sums[i] = 0;
         }
+        previous_node = node;
     }
 }
 
 
 double LineGraph::GetDistance(const int u, const int v) {
+    if (u > m_size || v > m_size) {
+        return -1;
+    }
+
     int a = m_fictive_index[u], b = m_fictive_index[v];
 
     if (a > b) {
